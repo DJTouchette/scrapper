@@ -8,7 +8,7 @@ const KijijiScraper = require("./Kijiji/index.js");
 const RenFasterScraper = require("./RentFaster/index.js");
 
 async function scrape() {
-  for (let i = 0; i < 1; i += 1) {
+  for (let i = 0; i < 10; i += 1) {
     await KijijiScraper();
     await RenFasterScraper();
   }
@@ -22,18 +22,23 @@ async function compareFiles() {
 
   let kijijiJson = JSON.parse(kijijiJsonFile);
   let rentFatserJson = JSON.parse(rentFasterJsonFile);
-  console.log(kijijiJson);
-  console.log(rentFatserJson);
+  // console.log(kijijiJson);
+  // console.log(rentFatserJson);
+  rentFatserJson.forEach((currentValue, index, array) => {
+    // 40090 Retreat Road
+    currentValue = parser.parseLocation(currentValue).street;
+    console.log(currentValue);
 
+  });
   kijijiJson.forEach((currentValue, index, array) => {
     // 40090 Retreat Road
     // var parsed = parser.parseLocation(currentValue + ' Calgary' + ' Alberta');
 
     // console.log(parsed);
-    console.log(rentFatserJson.includes(currentValue));
+    console.log(rentFatserJson.includes(parser.parseLocation(currentValue).street));
   });
 
 }
 
-scrape();
-// compareFiles();
+// scrape();
+compareFiles();
