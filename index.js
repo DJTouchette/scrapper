@@ -3,6 +3,7 @@
 const request = require("tinyreq");
 const cheerio = require("cheerio");
 const fs = require("fs");
+const parser = require('parse-address');
 const KijijiScraper = require("./Kijiji/index.js");
 const RenFasterScraper = require("./RentFaster/index.js");
 
@@ -25,10 +26,14 @@ async function compareFiles() {
   console.log(rentFatserJson);
 
   kijijiJson.forEach((currentValue, index, array) => {
+    // 40090 Retreat Road
+    // var parsed = parser.parseLocation(currentValue + ' Calgary' + ' Alberta');
+
+    // console.log(parsed);
     console.log(rentFatserJson.includes(currentValue));
   });
 
 }
 
-// scrape();
-compareFiles();
+scrape();
+// compareFiles();
