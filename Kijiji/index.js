@@ -8,15 +8,16 @@ let kijijiPageNum = 1;
 let allAdressesKijiji = [];
 
 function getPageUrl() {
-  let currentPageUrl = kijijiBase + '/b-house-rental/calgary' + '/page-' + kijijiPageNum + '/c43l1700199';
+  let currentPageUrl = kijijiBase + '/b-house-rental/calgary' + '/page-' + kijijiPageNum + '/c43l1700199/?sort=priceAsc';
   kijijiPageNum += 1;
   console.log(currentPageUrl);
   return currentPageUrl;
 }
 
 async function scrapePage(){
+  return new Promise( function(resolve, reject) {
   console.log("Starting kijiji");
-  await request(getPageUrl(), function (err, body) {
+   request(getPageUrl(), function (err, body) {
 
       if (!err) {
         console.log("Starting kiji parse");
@@ -50,7 +51,7 @@ async function scrapePage(){
             let jsonFileString = JSON.stringify(json);
             // console.log(jsonFileString);
             fs.writeFileSync('Kijiji/kijijiAdresses.json', jsonFileString);
-
+            resolve(jsonFileString);
             // allAdressesKijiji.push(table);
 
 
@@ -59,9 +60,10 @@ async function scrapePage(){
 
       }
 
-      if (err) console.log("Error", err);
+      if (err) return reject(err);
 
   });
+});
 }
 
 module.exports = scrapePage;

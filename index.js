@@ -6,39 +6,50 @@ const fs = require("fs");
 const parser = require('parse-address');
 const KijijiScraper = require("./Kijiji/index.js");
 const RenFasterScraper = require("./RentFaster/index.js");
+const amountOfPagesRentFaster = 1;
+const amountOfPagesKijiji = 1;
+let shared = 0;
 
 async function scrape() {
-  for (let i = 0; i < 10; i += 1) {
-    await KijijiScraper();
-    await RenFasterScraper();
+  const allPromises = [];
+
+  for (let i = 0; i < amountOfPagesRentFaster; i += 1) {
+    allPromises.push(RenFasterScraper());
   }
 
+  for (let i = 0; i < amountOfPagesKijiji; i += 1) {
+      allPromises.push(KijijiScraper());
+  }
 
+  Promise.all(allPromises)
+  .then(() => {
+    // compareFiles();
+  })
+  .catch(reason => {
+    console.log(reason)
+  });
 }
 
 async function compareFiles() {
-  let kijijiJsonFile = fs.readFileSync('Kijiji/kijijiAdresses.json');
-  let rentFasterJsonFile = fs.readFileSync('Rentfaster/rentfasterAdresses.json');
+  return new Promise( function(resolve, reject) {
+    let kijijiJsonFile = fs.readFileSync('Kijiji/kijijiAdresses.json');
+    let rentFasterJsonFile = fs.readFileSync('Rentfaster/rentfasterAdresses.json');
 
-  let kijijiJson = JSON.parse(kijijiJsonFile);
-  let rentFatserJson = JSON.parse(rentFasterJsonFile);
-  // console.log(kijijiJson);
-  // console.log(rentFatserJson);
-  rentFatserJson.forEach((currentValue, index, array) => {
-    // 40090 Retreat Road
-    currentValue = parser.parseLocation(currentValue).street;
-    console.log(currentValue);
+    let kijijiJson = JSON.parse(kijijiJsonFile);
+    let rentFatserJson = JSON.parse(rentFasterJsonFile);
 
-  });
-  kijijiJson.forEach((currentValue, index, array) => {
-    // 40090 Retreat Road
-    // var parsed = parser.parseLocation(currentValue + ' Calgary' + ' Alberta');
+    kijijiJson.forEach((currentValue, index, array) => {
+      if (rentFatserJson.includes(currentValue)) shared += 1;
+    });
 
-    // console.log(parsed);
-    console.log(rentFatserJson.includes(parser.parseLocation(currentValue).street));
+    console.log("Rent faster has " + rentFatserJson.length + " properties that have addresses in " + amountOfPagesRentFaster + " pages scrapped");
+    console.log("Kijiji has " + kijijiJson.length + " properties that have addresses in " + amountOfPagesKijiji + " pages scrapped");
+
+    console.log("Of those " + rentFatserJson.length + " adds there is " + shared + " that are on kijiji" );
+    resolve(shared);
   });
 
 }
 
-// scrape();
-compareFiles();
+scrape();
+// compareFiles();

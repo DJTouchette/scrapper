@@ -9,15 +9,15 @@ const firefox = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, 
 const rentFasterBaseUrl = 'https://www.rentfaster.ca';
 let pageNum = 0;
 function getPageUrl() {
-  let currentPageUrl = pageNum == 0 ? "https://www.rentfaster.ca/ab/calgary/rentals/" : rentFasterBaseUrl + '/ab/calgary/rentals/?keywords=&cur_page=' + pageNum + '&proximity_type=location-city&novacancy=0&city_id=1';
+  let currentPageUrl = pageNum == 0 ? "https://www.rentfaster.ca/ab/calgary/rentals/?keywords=&sortby=price" : rentFasterBaseUrl + '/ab/calgary/rentals/?keywords=&sortby=price&cur_page=' + pageNum + '&proximity_type=location-city&novacancy=0&city_id=1';
   console.log(currentPageUrl);
   pageNum += 1;
   return currentPageUrl;
 }
 
-async function scrape() {
+function scrape() {
   try {
-    await headlessBorwserParse(getPageUrl(), pageNum - 1)
+    headlessBorwserParse(getPageUrl(), pageNum - 1)
     .then((pagenum) => {
       return readScrappedHtml(pagenum);
     })
